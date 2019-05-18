@@ -9,9 +9,6 @@ const width = Dimensions.get('window').width;
 
 export default class LogIn extends React.Component {
 
-    static navigationOptions = {
-        header: null
-    };
 
     render() {
         return (
@@ -21,15 +18,15 @@ export default class LogIn extends React.Component {
                     <Image style={styles.avatar} source={{uri: 'https://cdn3.iconfinder.com/data/icons/business-avatar-1/512/10_avatar-512.png'}}/>
 
                     <Text numberOfLines={3} ellipsizeMode='tail' style={styles.userName}>
-                        {this.props.question.author} asks:
+                       Ajdin says:
                     </Text>
 
                 </View>
 
-                <View style={styles.question}>
+                <View style={styles.answer}>
 
-                    <Text numberOfLines={3} ellipsizeMode='tail' style={styles.questionTxt}>
-                        {this.props.question.question}
+                    <Text numberOfLines={3} ellipsizeMode='tail' style={styles.answerTxt}>
+                        Answer to a question
                     </Text>
 
                 </View>
@@ -38,17 +35,12 @@ export default class LogIn extends React.Component {
 
                     <TouchableOpacity style={styles.action}>
                         <MaterialCommunityIcons  name="heart" size={24} color='white' />
-                        <Text style={styles.actionValue}>{this.props.question.rating.likes.userIds.length}</Text>
+                        <Text style={styles.actionValue}>1</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.action}>
                         <MaterialCommunityIcons  name="heart-broken" size={24} color='white' />
-                        <Text style={styles.actionValue}>{this.props.question.rating.dislikes.userIds.length}</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => this.props.openDetails(this.props.question)} style={styles.action}>
-                        <FontAwesome  name="comment" size={24} color='white' />
-                        <Text style={styles.actionValue}> {this.props.question.answers.answerIds.length} </Text>
+                        <Text style={styles.actionValue}>1</Text>
                     </TouchableOpacity>
 
                 </View>
@@ -65,18 +57,18 @@ const styles = StyleSheet.create({
         margin: 10,
         height: 'auto',
         padding: 10,
-        backgroundColor: '#E0358E',
+        backgroundColor: '#2B2B38',
         elevation: 10,
         borderRadius: 5
     },
 
-    question: {
+    answer: {
         width: '100%',
         height: 'auto',
     },
-    questionTxt: {
+    answerTxt: {
         color: 'white',
-       // textOverflow: 'ellipsis',
+        // textOverflow: 'ellipsis',
         fontSize: 20,
     },
     actionBar: {

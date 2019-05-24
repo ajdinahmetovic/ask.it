@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-import {Provider} from "react-redux";
-import {store} from "../redux/app-redux";
-import QuestionList from "./Tabs/QuestionList/QuestionList";
+
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import Profile from "./Tabs/Profile";
 import NewQuestion from "./Tabs/NewQuestion";
 import QuestionListContainer from "./Tabs/QuestionList/QuestionListContainer";
+import ProfileContainer from "./Tabs/Profile/ProfileContainer";
 
 
 const TabNavigator = createBottomTabNavigator({
@@ -33,11 +31,11 @@ const TabNavigator = createBottomTabNavigator({
         },
 
         Profile: {
-            screen: Profile,
+            screen: ProfileContainer,
             navigationOptions: {
                 tabBarLabel: '',
                 tabBarIcon: ({tintColor}) => (
-                    <MaterialCommunityIcons  name="account-outline" size={32} color={tintColor} />
+                        <MaterialCommunityIcons  name="account-outline" size={32} color={tintColor} />
                 )
             }
         },
@@ -68,10 +66,7 @@ export default class MainComponent extends React.Component {
 
     render() {
         return (
-
-            <Provider store={store}>
                 <TabNav/>
-            </Provider>
         );
     }
 }

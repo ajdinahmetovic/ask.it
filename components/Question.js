@@ -2,12 +2,24 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Dimensions } from 'react-native'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import {setCurrentQuestion} from "../redux/app-redux";
+import {connect} from "react-redux";
 
 
+
+const mapStateToProps = (state) => {
+    return {};
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setCurrentQuestion: (question) => {dispatch(setCurrentQuestion(question))}
+    };
+};
 
 const width = Dimensions.get('window').width;
 
-export default class LogIn extends React.Component {
+class Question extends React.Component {
 
     static navigationOptions = {
         header: null
@@ -46,7 +58,7 @@ export default class LogIn extends React.Component {
                         <Text style={styles.actionValue}>{this.props.question.rating.dislikes.userIds.length}</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => this.props.openDetails(this.props.question)} style={styles.action}>
+                    <TouchableOpacity onPress={() => this.openDetails()} style={styles.action}>
                         <FontAwesome  name="comment" size={24} color='white' />
                         <Text style={styles.actionValue}> {this.props.question.answers.answerIds.length} </Text>
                     </TouchableOpacity>
@@ -56,7 +68,16 @@ export default class LogIn extends React.Component {
             </View>
         );
     }
+
+
+    openDetails(){
+        this.props.openDetails()
+        this.props.setCurrentQuestion(this.props.question);
+    }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Question);
+
 
 const styles = StyleSheet.create({
     container: {
@@ -76,6 +97,7 @@ const styles = StyleSheet.create({
     },
     questionTxt: {
         color: 'white',
+        fontFamily: 'montserrat-semi-bold',
        // textOverflow: 'ellipsis',
         fontSize: 20,
     },
@@ -97,6 +119,7 @@ const styles = StyleSheet.create({
     actionValue: {
         color: 'white',
         fontSize: 15,
+        fontFamily: 'montserrat',
         marginLeft: 2,
 
     },
@@ -114,6 +137,7 @@ const styles = StyleSheet.create({
         height: 35,
     },
     userName: {
+        fontFamily: 'montserrat',
         marginLeft: 5,
         fontSize: 15,
         color: 'white',

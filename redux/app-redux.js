@@ -5,17 +5,22 @@ const initialState = {
 
     userData: {
         publicData: {
-            username: '',
+            username: 'ajdinahmetovic',
             avatar: '',
         },
 
         personalData: {
-            name: '',
+            name: 'Ajdin Ahmetovic',
             email: '',
+            password: ''
         },
 
-        myQuestions: [
+        questions: [
             {questionId: ''},
+            {questionId: ''},
+            {questionId: ''},
+            {questionId: ''},
+
         ],
 
         answeredQuestions: [
@@ -127,7 +132,7 @@ const reducer = (state = initialState, action) => {
 
     switch(action.type){
         case SET_CURRENT_QUESTION:
-            return { ...initialState, currentQuestionViewing: action.question};
+            return {...state, currentQuestionViewing: action.question};
 
         default: return initialState;
 

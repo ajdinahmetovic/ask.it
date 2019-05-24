@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     },
     answerTxt: {
         color: 'white',
+        fontFamily: 'montserrat',
         // textOverflow: 'ellipsis',
         fontSize: 20,
     },
@@ -90,6 +91,8 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 15,
         marginLeft: 2,
+        fontFamily: 'montserrat',
+
 
     },
 
@@ -106,6 +109,8 @@ const styles = StyleSheet.create({
         height: 35,
     },
     userName: {
+        fontFamily: 'montserrat',
+
         marginLeft: 5,
         fontSize: 15,
         color: 'white',

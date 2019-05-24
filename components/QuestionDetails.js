@@ -11,7 +11,8 @@ const width = Dimensions.get('window').width;
 
 const mapStateToProps = (state) => {
     return {
-        question: state.currentQuestionViewing
+        question: state.currentQuestionViewing,
+        answers: state.answers
     };
 };
 
@@ -95,7 +96,7 @@ class QuestionDetails extends React.Component {
 
             return(
 
-                <Answer/>
+                <Answer key={index}/>
             );
 
         })
@@ -143,6 +144,8 @@ const styles = StyleSheet.create({
         height: 35,
     },
     userName: {
+
+        fontFamily: 'montserrat',
         marginLeft: 5,
         fontSize: 15,
         color: 'white',
@@ -167,10 +170,14 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 15,
         marginLeft: 2,
+        fontFamily: 'montserrat',
+
 
     },
 
     questionTxt: {
+        fontFamily: 'montserrat-semi-bold',
+
         color: 'white',
         // textOverflow: 'ellipsis',
         fontSize: 20,

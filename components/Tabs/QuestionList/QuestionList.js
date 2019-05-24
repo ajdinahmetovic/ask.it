@@ -51,8 +51,7 @@ class QuestionList extends React.Component {
         })
     }
 
-    openDetails (question){
-        this.props.setCurrentQuestion(question);
+    openDetails (){
         this.props.navigation.navigate('QuestionDetails');
     }
 }

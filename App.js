@@ -8,7 +8,9 @@ import MainComponent from "./components/MainComponent";
 import QuestionDetails from "./components/QuestionDetails";
 import Question from "./components/Question";
 import QuestionList from "./components/Tabs/QuestionList/QuestionList";
-
+import { Font } from 'expo';
+import {Provider} from "react-redux";
+import {store} from "./redux/app-redux";
 
 const Routes = createStackNavigator ({
 
@@ -41,9 +43,36 @@ const Routes = createStackNavigator ({
 let Navigation = createAppContainer(Routes);
 
 export default class App extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      isReady: false
+    }
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      'montserrat': require('./assets/font/Montserrat-Regular.ttf'),
+      'montserrat-bold': require('./assets/font/Montserrat-Bold.ttf'),
+      'montserrat-thin': require('./assets/font/Montserrat-Thin.ttf'),
+      'montserrat-semi-bold': require('./assets/font/Montserrat-SemiBold.ttf'),
+
+    });
+
+    this.setState({isReady:true})
+  }
+
+
   render() {
+    if (!this.state.isReady) {
+      return <Expo.AppLoading/>;
+    }
     return (
-        <Navigation/>
+        <Provider store={store}>
+          <Navigation/>
+        </Provider>
     );
   }
 }

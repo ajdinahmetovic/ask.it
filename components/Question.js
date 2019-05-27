@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Dimensions } from 'react-native'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
-import {setCurrentQuestion} from "../redux/app-redux";
+import {addQuestion} from "../redux/app-redux";
 import {connect} from "react-redux";
 
 
@@ -50,17 +50,17 @@ class Question extends React.Component {
 
                     <TouchableOpacity style={styles.action}>
                         <MaterialCommunityIcons  name="heart" size={24} color='white' />
-                        <Text style={styles.actionValue}>{this.props.question.rating.likes.userIds.length}</Text>
+                        <Text style={styles.actionValue}>{this.props.question.rating.likes.length}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.action}>
                         <MaterialCommunityIcons  name="heart-broken" size={24} color='white' />
-                        <Text style={styles.actionValue}>{this.props.question.rating.dislikes.userIds.length}</Text>
+                        <Text style={styles.actionValue}>{this.props.question.rating.dislike.length}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => this.openDetails()} style={styles.action}>
                         <FontAwesome  name="comment" size={24} color='white' />
-                        <Text style={styles.actionValue}> {this.props.question.answers.answerIds.length} </Text>
+                        <Text style={styles.actionValue}> {this.props.question.answers.length} </Text>
                     </TouchableOpacity>
 
                 </View>
@@ -71,7 +71,7 @@ class Question extends React.Component {
 
 
     openDetails(){
-        this.props.openDetails()
+        this.props.openDetails();
         this.props.setCurrentQuestion(this.props.question);
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {createStackNavigator, createAppContainer} from 'react-navigation'
+import {createStackNavigator, createSwitchNavigator, createAppContainer} from 'react-navigation'
 
 import LogIn from "./components/LogIn";
 import SignUp from "./components/SignUp";
@@ -11,36 +11,50 @@ import QuestionList from "./components/Tabs/QuestionList/QuestionList";
 import { Font } from 'expo';
 import {Provider} from "react-redux";
 import {store} from "./redux/app-redux";
+import AuthLoadingComponent from "./components/Loading/AuthLoadingComponent";
 
-const Routes = createStackNavigator ({
+  let AuthStack  = createStackNavigator ({
+    LogIn: {
+      screen: LogIn
+    },
+    SignUp: {
+      screen: SignUp
+    },
+  });
 
-  MainComponent: {
-    screen: MainComponent
-  },
+  let AppStack  = createStackNavigator ({
 
-  LogIn: {
-    screen: LogIn
-  },
+    MainComponent: {
+      screen: MainComponent
+    },
 
-  SignUp: {
-    screen: SignUp
-  },
+    QuestionDetails: {
+      screen: QuestionDetails
+    },
 
-  QuestionDetails: {
-    screen: QuestionDetails
-  },
+    Question: {
+      screen: Question
+    },
 
-  Question: {
-    screen: Question
-  },
+    QuestionList: {
+      screen: QuestionList
+    },
 
-  QuestionList: {
-    screen: QuestionList
-  }
+  });
 
-});
 
-let Navigation = createAppContainer(Routes);
+let Navigation = createAppContainer(
+    createSwitchNavigator(
+      {
+        AuthLoading: AuthLoadingComponent,
+        AuthStack: AuthStack,
+        AppStack: AppStack,
+      },
+        {
+          initialRouteName: 'AuthLoading'
+        }
+    )
+);
 
 export default class App extends React.Component {
 
@@ -71,7 +85,7 @@ export default class App extends React.Component {
     }
     return (
         <Provider store={store}>
-          <Navigation/>
+          <Navigation initialRouteName={'SignUp'}/>
         </Provider>
     );
   }

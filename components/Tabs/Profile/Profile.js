@@ -5,6 +5,8 @@ import {connect} from "react-redux";
 import Question  from "../../Question";
 import {setCurrentQuestion} from "../../../redux/app-redux";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { InteractionManager, ActivityIndicator} from 'react-native';
+import LoadingComponent from "../../QuestionDetails";
 
 
 
@@ -12,7 +14,7 @@ const width = Dimensions.get('window').width;
 
 const mapStateToProps = (state) => {
     return {
-        user: state.userData,
+        user: state.user,
         questions: state.questions
     };
 };
@@ -32,12 +34,19 @@ class Profile extends React.Component {
     constructor (props){
         super(props);
 
+        this.state = {
+            isReady: false
+        };
 
         this.openDetails = this.openDetails.bind(this);
 
     }
 
+
+
+
     render() {
+
         return (
            <View style={styles.container}>
 
@@ -55,22 +64,22 @@ class Profile extends React.Component {
 
                  <View style={styles.infoContainer}>
                      <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.nameTxt}>{this.props.user.personalData.name}</Text>
+                        <Text style={styles.nameTxt}>{this.props.user.userData.name}</Text>
                          <TouchableOpacity onPress={() => this.props.navigation.navigate('EditProfile')} style={{marginLeft: 5}}>
                             <MaterialCommunityIcons  name="settings" size={24} color='white' />
                          </TouchableOpacity>
                      </View>
 
-                     <Text style={styles.usernameTxt}>@{this.props.user.publicData.username}</Text>
+                     <Text style={styles.usernameTxt}>@{this.props.user.authData.username}</Text>
 
                      <View style={{flexDirection: 'row', marginTop: 5}}>
 
                          <Text style={{fontSize: 15, color: '#8E8D93', fontFamily: 'montserrat',}}>
-                             {this.props.user.questions.length} Questions
+                             1 Questions
                          </Text>
 
                          <Text style={{fontSize: 15, color: '#8E8D93', fontFamily: 'montserrat', marginLeft: 5}}>
-                             {this.props.user.answeredQuestions.length} Answers
+                             1 Answers
                          </Text>
 
                      </View>

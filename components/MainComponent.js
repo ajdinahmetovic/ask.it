@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import NewQuestion from "./Tabs/NewQuestion";
+import { MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import QuestionListContainer from "./Tabs/QuestionList/QuestionListContainer";
 import ProfileContainer from "./Tabs/Profile/ProfileContainer";
+import {connect} from "react-redux";
 
 
 const TabNavigator = createBottomTabNavigator({
@@ -15,17 +14,27 @@ const TabNavigator = createBottomTabNavigator({
             navigationOptions: {
                 tabBarLabel: '',
                 tabBarIcon: ({tintColor}) => (
-                    <MaterialCommunityIcons  name="comment-question-outline" size={32} color={tintColor} />
+                    <MaterialCommunityIcons  name="comment-question-outline" size={30} color={tintColor} />
                 )
             }
         },
 
-        NewQuestion: {
-            screen: NewQuestion,
+        HotQuestion: {
+            screen: QuestionListContainer,
             navigationOptions: {
                 tabBarLabel: '',
-                tabBarIcon: () => (
-                    <MaterialIcons  name="add-circle" size={64} color='#714AE7' />
+                tabBarIcon: ({tintColor}) => (
+                    <SimpleLineIcons  name="fire" size={30} color={tintColor} />
+                )
+            }
+        },
+
+        TopUsers: {
+            screen: QuestionListContainer,
+            navigationOptions: {
+                tabBarLabel: '',
+                tabBarIcon: ({tintColor}) => (
+                    <MaterialCommunityIcons  name="format-list-numbers" size={30} color={tintColor} />
                 )
             }
         },
@@ -35,7 +44,7 @@ const TabNavigator = createBottomTabNavigator({
             navigationOptions: {
                 tabBarLabel: '',
                 tabBarIcon: ({tintColor}) => (
-                        <MaterialCommunityIcons  name="account-outline" size={32} color={tintColor} />
+                        <MaterialCommunityIcons  name="account-outline" size={30} color={tintColor} />
                 )
             }
         },
@@ -49,7 +58,7 @@ const TabNavigator = createBottomTabNavigator({
             inactiveTintColor: '#6D6C71',
             style:{
                 backgroundColor: '#2B2B38',
-                height: 66,
+                height: 45,
             },
         },
     }
@@ -59,10 +68,23 @@ const TabNavigator = createBottomTabNavigator({
 
 let TabNav = createAppContainer(TabNavigator);
 
-export default class MainComponent extends React.Component {
-    static navigationOptions = {
-        header: null
+const mapStateToProps = (state) => {
+    return {
+        tabBarVisibility: state.tabBarVisibility,
     };
+};
+
+
+
+class MainComponent extends React.Component {
+    constructor (props){
+        super(props);
+    }
+
+    static navigationOptions = ({navigation}) => ({
+        header: null,
+       // tabBarVisible: this.props.tabBarVisibility
+    });
 
     render() {
         return (
@@ -70,6 +92,9 @@ export default class MainComponent extends React.Component {
         );
     }
 }
+
+export default connect(mapStateToProps)(MainComponent);
+
 
 const styles = StyleSheet.create({
     container: {

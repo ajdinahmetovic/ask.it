@@ -1,9 +1,12 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { Dimensions, Modal } from 'react-native'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import {connect} from "react-redux";
+import { InteractionManager, ActivityIndicator} from 'react-native';
 import Answer from "./Answer";
+import LoadingComponent from "./Loading/LoadingComponent";
+import {addAnswer} from "../redux/app-redux";
 
 
 
@@ -17,7 +20,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return { };
+    return {
+        addAnswer: (answer) => {dispatch(addAnswer(answer))}
+    };
 };
 
 class QuestionDetails extends React.Component {
@@ -27,19 +32,37 @@ class QuestionDetails extends React.Component {
         headerStyle: {
             backgroundColor: '#E0358E',
             elevation: 0,
-
         },
+
     };
 
     constructor (props){
         super(props);
 
+        this.state = {
+            isReady: false,
+        };
+
+        this.postAnswer = this.postAnswer.bind(this);
+    }
+
+    componentDidMount() {
+
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                isReady: true
+            })
+        });
     }
 
     render() {
+        if(!this.state.isReady){
+            return <LoadingComponent />
+        }
+
         return (
             <View style={styles.container}>
-
+                <ScrollView>
                 <View style={styles.containerQuestion}>
 
                     <View style={styles.userInfo}>
@@ -71,36 +94,64 @@ class QuestionDetails extends React.Component {
                             <Text style={styles.actionValue}>{this.props.question.rating.dislikes.userIds.length}</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => this.props.openDetails(this.props.question)} style={styles.action}>
-                            <FontAwesome  name="comment" size={24} color='white' />
-                            <Text style={styles.actionValue}> {this.props.question.answers.answerIds.length} </Text>
-                        </TouchableOpacity>
-
                     </View>
 
                 </View>
 
-                <ScrollView>
+                    <View style={styles.typeAnswerContainer}>
+
+                        <TextInput
+                            style={styles.answerInput}
+                            placeholder={'Type your answer'}
+                            onChangeText={(answer) => this.setState({answer})}
+                            value={this.state.answer}
+                            multiline={true}
+                        />
+
+                        <TouchableOpacity onPress={() => this.postAnswer(this.state.answer)}>
+                            <MaterialCommunityIcons name='check' size={32} color='white'/>
+                        </TouchableOpacity>
+
+                    </View>
 
                     {this.renderAnswers()}
 
                 </ScrollView>
+                {/*
 
+                    <KeyboardAvoidingView style={{position: 'absolute', left: 0, right: 0, bottom: 0}}
+                                          behavior="position">
+                        <View style={styles.typeAnswerContainer}>
 
+                            <TextInput
+                                style={styles.answerInput}
+                                placeholder={'Type your answer'}
+                                multiline={true}
+                            />
+
+                            <TouchableOpacity>
+                                <MaterialCommunityIcons name='check' size={32} color='white'/>
+                            </TouchableOpacity>
+
+                        </View>
+                    </KeyboardAvoidingView>
+                    */
+                }
             </View>
         );
     }
 
     renderAnswers () {
         return this.props.question.answers.answerIds.map((answer, index) => {
-
             return(
-
                 <Answer key={index}/>
             );
 
         })
+    }
 
+    postAnswer(answer){
+        this.props.addAnswer(answer)
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(QuestionDetails);
@@ -183,6 +234,24 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
 
+    typeAnswerContainer:{
+        width: width - 20,
+        margin: 10,
+        height: 'auto',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        flexDirection: 'row',
+        backgroundColor: '#2B2B38',
+        elevation: 10,
+        borderRadius: 5
+    },
 
-
+    answerInput:{
+        color: 'white',
+        fontFamily: 'montserrat',
+        minHeight: 50,
+        width: '90%',
+        height: 'auto'
+    },
 });

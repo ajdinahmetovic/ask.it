@@ -1,26 +1,69 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    AsyncStorage,
+    Modal,
+    ActivityIndicator
+} from 'react-native';
+import LoadingComponent from "./Loading/LoadingComponent";
+import LoadingModalComponent from "./Loading/LoadingModalComponent";
+import {AppLoading} from "expo";
+import {setUserData} from "../redux/app-redux";
+import {setToken} from "../redux/app-redux";
+
+import {connect} from "react-redux";
 
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setToken: (token) => {dispatch(setToken(token))},
+        setUserData: (userInfo) => {dispatch(setUserData(userInfo))},
+    };
+};
 
-export default class LogIn extends React.Component {
+class LogIn extends React.Component {
     static navigationOptions = {
         header: null
     };
 
+    constructor(props){
+        super(props);
+        this.state= {
+            isLoading: false,
+        }
+    }
+
+
     render() {
+
         return (
             <View style={styles.container}>
 
+                <LoadingModalComponent isLoading={this.state.isLoading}/>
+
                 <View style={styles.inputContainer}>
-                    <TextInput placeholder={"Username"} style={styles.inputText}/>
+                    <TextInput
+                        onChangeText={(username) => this.setState({username})}
+                        value={this.state.username}
+                        placeholder={"Username"}
+                        style={styles.inputText}/>
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <TextInput placeholder={"Password"} secureTextEntry={true} style={styles.inputText}/>
+                    <TextInput
+                        onChangeText={(password) => this.setState({password})}
+                        value={this.state.password}
+                        placeholder={"Password"}
+                        secureTextEntry={true}
+                        style={styles.inputText}/>
                 </View>
 
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('MainComponent')} style={styles.loginButton}>
+                <TouchableOpacity onPress={() => this.login()} style={styles.loginButton}>
                     <Text style={{color: 'white'}}>LOGIN</Text>
                 </TouchableOpacity>
 
@@ -32,7 +75,58 @@ export default class LogIn extends React.Component {
             </View>
         );
     }
+
+
+
+    async login (){
+        this.setState({isLoading: true});
+        let response = await fetch('http://192.168.0.108:3000/user/login', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                authData: {
+                    username: this.state.username,
+                    password: this.state.password,
+                }
+            })
+        });
+
+        let responseCode = response.status;
+        response = await response.json();
+
+        this.setState({isLoading: false});
+        if(responseCode === 201){
+            try {
+                //console.log(response.token);
+                this.props.setToken(response.token);
+                this.props.setUserData(response.user);
+                await AsyncStorage.setItem('USER', JSON.stringify(response));
+            } catch (error) {
+                console.log(error)
+            }
+
+            this.props.navigation.navigate('AppStack')
+        } else {
+            console.log(response);
+            Alert.alert(
+                'Error',
+                response.message,
+                [
+                    {text: 'Try again', style: 'cancel'},
+                ],
+                { cancelable: true }
+            )
+        }
+
+
+    }
 }
+export default connect(null, mapDispatchToProps)(LogIn);
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -72,5 +166,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 30
+    },
+    modal: {
+        width: 100,
+        height: 100,
+        backgroundColor: '#E0358E',
+        alignItems:'center',
+        justifyContent: 'center',
     }
 });

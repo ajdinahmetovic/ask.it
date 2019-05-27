@@ -1,7 +1,11 @@
-import { createStore, applyMiddleware } from 'redux';
+import {applyMiddleware, createStore} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 
 const initialState = {
+
+
+    token: '',
+    user: {},
 
     userData: {
         publicData: {
@@ -28,103 +32,11 @@ const initialState = {
         ]
     },
 
-    questions: [
-        {
-            id: 0,
-            author: 'Ajdin',
-            question: 'What is 2 + 2 ?',
-            answers: {
-                answerIds: ['', '', '', '']
-            },
-            rating: {
-                likes: {
-                    userIds: ['', '', '']
-                },
-                dislikes: {
-                    userIds: ['', '', '']
-                }
-            },
-            date: '14.08.2019'
-        },
+    questions: [],
 
-        {
-            id: 1,
-            author: 'Pearson 1',
-            question: 'What am I seeing, hearing, feeling, smelling & tasting ?',
-            answers: {
-                answerIds: ['', '']
-            },
-            rating: {
-                likes: {
-                    userIds: ['']
-                },
-                dislikes: {
-                    userIds: ['']
-                }
-            },
-            date: '14.08.2019'
-        },
+    currentQuestionViewing: null,
 
-        {
-            id: 2,
-            author: 'Pearson 2',
-            question: 'What is the smallest planet in our solar system ?',
-            answers: {
-                answerIds: ['', '']
-            },
-            rating: {
-                likes: {
-                    userIds: ['']
-                },
-                dislikes: {
-                    userIds: ['']
-                }
-            },
-            date: '14.08.2019'
-        },
-
-        {
-            id: 3,
-            author: 'Albin',
-            question: 'What are the dimensions in inches of the first footprint on Earth’s moon ?',
-            answers: {
-                answerIds: ['', '']
-            },
-            rating: {
-                likes: {
-                    userIds: ['']
-                },
-                dislikes: {
-                    userIds: ['']
-                }
-            },
-            date: '14.08.2019'
-        }
-    ],
-
-    answers: [
-        {
-            user: {
-                id: '0',
-                publicData: {
-                    username: 'ajdinahmetovic',
-                    avatar: '',
-                },
-            },
-            answer: 'It is 4',
-            rating: {
-                likes: {
-                    userIds: ['']
-                },
-                dislikes: {
-                    userIds: ['']
-                }
-            },
-            date: ''
-        }
-    ],
-
-    currentQuestionViewing: null
+    tabBarVisibility: true
 
 };
 
@@ -133,6 +45,22 @@ const reducer = (state = initialState, action) => {
     switch(action.type){
         case SET_CURRENT_QUESTION:
             return {...state, currentQuestionViewing: action.question};
+
+        case SET_USER:
+            const newState = state;
+            newState.user = action.user.user;
+            newState.token = action.user.token;
+            return {...state, newState};
+
+        case SET_TOKEN:
+            return {...state, token: action.token};
+
+        case ADD_QUESTION:
+            const {questions} = state;
+            questions.push(action.question);
+            return {questions};
+        case SET_QUESTIONS:
+            return {...state, questions: action.questions};
 
         default: return initialState;
 
@@ -145,20 +73,42 @@ export { store };
 
 const SET_CURRENT_QUESTION = 'SET_CURRENT_QUESTION';
 const setCurrentQuestion = (question) => {
-
     return{
         type: SET_CURRENT_QUESTION,
         question: question
     }
-
 };
 
-export {setCurrentQuestion}
-
-const testSomething = (val) => {
+const SET_USER = 'SET_USER';
+const setUserData = (userInfo) => {
     return{
-        type: 'test',
-        val: val
+        type: SET_USER,
+        user: userInfo
     }
 };
-export {testSomething}
+
+const SET_TOKEN = 'SET_TOKEN';
+const setToken = (token) => {
+    return{
+        type: SET_TOKEN,
+        token: token
+    }
+};
+
+const ADD_QUESTION = 'ADD_QUESTION';
+const addQuestion = (question) => {
+    return{
+        type: ADD_QUESTION,
+        question: question
+    }
+};
+
+const SET_QUESTIONS = 'SET_QUESTIONS';
+const setQuestions = (questions) => {
+    return{
+        type: SET_QUESTIONS,
+        questions: questions
+    }
+};
+
+export {setUserData, setCurrentQuestion, addQuestion, setToken, setQuestions};

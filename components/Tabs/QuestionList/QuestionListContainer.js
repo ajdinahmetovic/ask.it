@@ -25,6 +25,12 @@ const Routes = createStackNavigator ({
 let Navigation = createAppContainer(Routes);
 
 export default class QuestionListContainer extends React.Component {
+
+    static navigationOptions = {
+        tabBarVisible: true
+    };
+
+
     render() {
         return (
             <Navigation/>

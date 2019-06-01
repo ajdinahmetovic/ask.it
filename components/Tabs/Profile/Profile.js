@@ -1,12 +1,12 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, Alert} from 'react-native';
 import { Dimensions } from 'react-native'
 import {connect} from "react-redux";
 import Question  from "../../Question";
-import {setCurrentQuestion} from "../../../redux/app-redux";
+import {clearQuestions, setCurrentQuestion, setQuestions} from "../../../redux/app-redux";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { InteractionManager, ActivityIndicator} from 'react-native';
-import LoadingComponent from "../../QuestionDetails";
+import LoadingComponent from "../../Loading/LoadingComponent";
 
 
 
@@ -15,13 +15,19 @@ const width = Dimensions.get('window').width;
 const mapStateToProps = (state) => {
     return {
         user: state.user,
-        questions: state.questions
+        questions: state.questions,
+        token: state.token,
+        stats: state.stats
+
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setCurrentQuestion: (question) => {dispatch(setCurrentQuestion(question))}
+        setQuestions: (questions) => {dispatch(setQuestions(questions))},
+        setCurrentQuestion: (question) => {dispatch(setCurrentQuestion(question))},
+        clearQuestions: () => {dispatch(clearQuestions())},
+
     };
 };
 
@@ -35,17 +41,29 @@ class Profile extends React.Component {
         super(props);
 
         this.state = {
-            isReady: false
+            isReady: false,
+            questionsFetched: false,
+
         };
 
         this.openDetails = this.openDetails.bind(this);
 
     }
 
+    componentDidMount() {
 
+
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
+                isReady: true,
+                questionsFetched: false
+            })
+        });
+    }
 
 
     render() {
+
 
         return (
            <View style={styles.container}>
@@ -64,7 +82,7 @@ class Profile extends React.Component {
 
                  <View style={styles.infoContainer}>
                      <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.nameTxt}>{this.props.user.userData.name}</Text>
+                        <Text style={styles.nameTxt}>{this.props.user.userData.name.substr(0, 15)}</Text>
                          <TouchableOpacity onPress={() => this.props.navigation.navigate('EditProfile')} style={{marginLeft: 5}}>
                             <MaterialCommunityIcons  name="settings" size={24} color='white' />
                          </TouchableOpacity>
@@ -75,11 +93,11 @@ class Profile extends React.Component {
                      <View style={{flexDirection: 'row', marginTop: 5}}>
 
                          <Text style={{fontSize: 15, color: '#8E8D93', fontFamily: 'montserrat',}}>
-                             1 Questions
+                             {this.props.stats.myQuestionsLen + ' '} Questions
                          </Text>
 
                          <Text style={{fontSize: 15, color: '#8E8D93', fontFamily: 'montserrat', marginLeft: 5}}>
-                             1 Answers
+                             {this.props.stats.answeredQuestionsLen + ' '} Answers
                          </Text>
 
                      </View>
@@ -94,6 +112,7 @@ class Profile extends React.Component {
            </View>
         );
     }
+    
 
     renderMyQuestions(){
         return this.props.questions.map((question, index) => {

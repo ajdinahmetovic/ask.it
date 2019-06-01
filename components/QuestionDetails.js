@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import { InteractionManager, ActivityIndicator} from 'react-native';
 import Answer from "./Answer";
 import LoadingComponent from "./Loading/LoadingComponent";
-import {addAnswer} from "../redux/app-redux";
+import {setAnswers, addAnswer} from "../redux/app-redux";
 
 
 
@@ -15,13 +15,17 @@ const width = Dimensions.get('window').width;
 const mapStateToProps = (state) => {
     return {
         question: state.currentQuestionViewing,
-        answers: state.answers
+        answers: state.answers,
+        user: state.user,
+        token: state.token
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addAnswer: (answer) => {dispatch(addAnswer(answer))}
+        addAnswer: (answer) => {dispatch(addAnswer(answer))},
+        setAnswers: (answers) => {dispatch(setAnswers(answers))},
+
     };
 };
 
@@ -33,7 +37,7 @@ class QuestionDetails extends React.Component {
             backgroundColor: '#E0358E',
             elevation: 0,
         },
-
+        headerTintColor: '#fff',
     };
 
     constructor (props){
@@ -46,8 +50,12 @@ class QuestionDetails extends React.Component {
         this.postAnswer = this.postAnswer.bind(this);
     }
 
+    componentWillMount() {
+    }
+
     componentDidMount() {
 
+        this.fetchAnswers()
         InteractionManager.runAfterInteractions(() => {
             this.setState({
                 isReady: true
@@ -66,7 +74,8 @@ class QuestionDetails extends React.Component {
                 <View style={styles.containerQuestion}>
 
                     <View style={styles.userInfo}>
-                        <Image style={styles.avatar} source={{uri: 'https://cdn3.iconfinder.com/data/icons/business-avatar-1/512/10_avatar-512.png'}}/>
+                        <Image style={styles.avatar}
+                               source={{uri: 'https://ui-avatars.com/api/?background=714AE7&color=fff&name='+ this.props.question.author + '&rounded=true'}}/>
 
                         <Text numberOfLines={3} ellipsizeMode='tail' style={styles.userName}>
                             {this.props.question.author} asks:
@@ -85,13 +94,13 @@ class QuestionDetails extends React.Component {
                     <View style={styles.actionBar}>
 
                         <TouchableOpacity style={styles.action}>
-                            <MaterialCommunityIcons  name="heart" size={24} color='white' />
-                            <Text style={styles.actionValue}>{this.props.question.rating.likes.userIds.length}</Text>
+                            <MaterialCommunityIcons  name="heart" size={24} color = {this.props.question.rating.likes.includes(this.props.user._id) ? 'red' : 'white'} />
+                            <Text style={styles.actionValue}>{this.props.question.rating.likes.length}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.action}>
-                            <MaterialCommunityIcons  name="heart-broken" size={24} color='white' />
-                            <Text style={styles.actionValue}>{this.props.question.rating.dislikes.userIds.length}</Text>
+                            <MaterialCommunityIcons  name="heart-broken" size={24} color = {this.props.question.rating.dislike.includes(this.props.user._id) ? 'red' : 'white'} />
+                            <Text style={styles.actionValue}>{this.props.question.rating.dislike.length}</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -108,7 +117,7 @@ class QuestionDetails extends React.Component {
                             multiline={true}
                         />
 
-                        <TouchableOpacity onPress={() => this.postAnswer(this.state.answer)}>
+                        <TouchableOpacity onPress={() => this.postAnswer()}>
                             <MaterialCommunityIcons name='check' size={32} color='white'/>
                         </TouchableOpacity>
 
@@ -142,16 +151,61 @@ class QuestionDetails extends React.Component {
     }
 
     renderAnswers () {
-        return this.props.question.answers.answerIds.map((answer, index) => {
+        return this.props.answers.map((answer) => {
             return(
-                <Answer key={index}/>
+                <Answer key={answer._id} answer={answer}/>
             );
 
         })
     }
 
-    postAnswer(answer){
-        this.props.addAnswer(answer)
+    async fetchAnswers (){
+
+        let response = await fetch('https://shielded-reef-97480.herokuapp.com/answer?questionId='+ this.props.question._id +'&count=1&sort=date', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        let responseCode = response.status;
+        response = await response.json();
+        this.props.setAnswers(response);
+    }
+
+
+
+    async postAnswer(){
+
+        let response = await fetch('https://shielded-reef-97480.herokuapp.com/question/answer', {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + this.props.token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: this.props.user._id,
+                answer:{
+                    questionId: this.props.question._id,
+                    author: this.props.user.authData.username,
+                    answer: this.state.answer
+                }
+            })
+        });
+
+        response = await response.json();
+
+        this.props.addAnswer(response);
+
+        /*
+        if(response.status === 201){
+            response = await response.json();
+            this.props.addAnswer(response)
+        }
+            */
+        //
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(QuestionDetails);

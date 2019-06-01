@@ -1,19 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert} from 'react-native';
 import { Dimensions } from 'react-native'
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
-import {addQuestion} from "../redux/app-redux";
+import {setAnswers, setCurrentQuestion, setRating} from "../redux/app-redux";
 import {connect} from "react-redux";
 
 
 
 const mapStateToProps = (state) => {
-    return {};
+    return {
+        userId: state.user._id,
+        token: state.token
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setCurrentQuestion: (question) => {dispatch(setCurrentQuestion(question))}
+        setCurrentQuestion: (question) => {dispatch(setCurrentQuestion(question))},
+        setRating: (rating) => {dispatch(setRating(rating))}
     };
 };
 
@@ -25,12 +29,21 @@ class Question extends React.Component {
         header: null
     };
 
+
+    constructor (props) {
+        super(props);
+        this.state = {
+
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
 
                 <View style={styles.userInfo}>
-                    <Image style={styles.avatar} source={{uri: 'https://cdn3.iconfinder.com/data/icons/business-avatar-1/512/10_avatar-512.png'}}/>
+                    <Image style={styles.avatar}
+                           source={{uri: 'https://ui-avatars.com/api/?background=714AE7&color=fff&name='+ this.props.question.author + '&rounded=true'}}/>
 
                     <Text numberOfLines={3} ellipsizeMode='tail' style={styles.userName}>
                         {this.props.question.author} asks:
@@ -48,13 +61,13 @@ class Question extends React.Component {
 
                 <View style={styles.actionBar}>
 
-                    <TouchableOpacity style={styles.action}>
-                        <MaterialCommunityIcons  name="heart" size={24} color='white' />
+                    <TouchableOpacity onPress={() => this.rateQuestion('like')} style={styles.action}>
+                        <MaterialCommunityIcons  name="heart" size={24} color = {this.props.question.rating.likes.includes(this.props.userId) ? 'red' : 'white'} />
                         <Text style={styles.actionValue}>{this.props.question.rating.likes.length}</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.action}>
-                        <MaterialCommunityIcons  name="heart-broken" size={24} color='white' />
+                    <TouchableOpacity onPress={() => this.rateQuestion('dislike')} style={styles.action}>
+                        <MaterialCommunityIcons  name="heart-broken" size={24} color = {this.props.question.rating.dislike.includes(this.props.userId) ? 'blue' : 'white'} />
                         <Text style={styles.actionValue}>{this.props.question.rating.dislike.length}</Text>
                     </TouchableOpacity>
 
@@ -70,7 +83,52 @@ class Question extends React.Component {
     }
 
 
+
+    async rateQuestion (rating){
+
+        try {
+            let response = await fetch('https://shielded-reef-97480.herokuapp.com/question/' + rating, {
+                method: 'PUT',
+                headers: {
+                    Authorization: 'Bearer ' + this.props.token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    questionId: this.props.question._id,
+                    userId: this.props.userId
+                })
+            });
+
+            let responseCode = await response.status;
+            response = await response.json();
+
+            if (responseCode === 201) {
+                this.props.setRating({
+                    questionId: this.props.question._id,
+                    obj: response
+                });
+            } else {
+                throw response.message
+            }
+        } catch (errMsg) {
+            Alert.alert(
+                'Error',
+                errMsg,
+                [
+                    {text: 'Try again', style: 'cancel'},
+                ],
+                { cancelable: true }
+            )
+
+        }
+
+        this.forceUpdate();
+    }
+
+
     openDetails(){
+        // this.fetchAnswers();
         this.props.openDetails();
         this.props.setCurrentQuestion(this.props.question);
     }

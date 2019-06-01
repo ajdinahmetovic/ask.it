@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import {createStackNavigator, createSwitchNavigator, createAppContainer} from 'react-navigation'
 
 import LogIn from "./components/LogIn";
@@ -7,7 +7,7 @@ import SignUp from "./components/SignUp";
 import MainComponent from "./components/MainComponent";
 import QuestionDetails from "./components/QuestionDetails";
 import Question from "./components/Question";
-import QuestionList from "./components/Tabs/QuestionList/QuestionList";
+import QuestionList from "./components/QuestionList/QuestionList";
 import { Font } from 'expo';
 import {Provider} from "react-redux";
 import {store} from "./redux/app-redux";
@@ -20,6 +20,8 @@ import AuthLoadingComponent from "./components/Loading/AuthLoadingComponent";
     SignUp: {
       screen: SignUp
     },
+  }, {
+    navigationOptions: { headerStyle: { marginTop: (Platform.OS === 'ios') ? 0 : Expo.Constants.statusBarHeight}}
   });
 
   let AppStack  = createStackNavigator ({

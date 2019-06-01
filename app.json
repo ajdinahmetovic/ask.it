@@ -22,8 +22,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.askit.askit"
     }
+
   }
 }

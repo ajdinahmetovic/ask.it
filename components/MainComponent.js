@@ -2,14 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import { MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
-import QuestionListContainer from "./Tabs/QuestionList/QuestionListContainer";
+import QuestionListContainer from "./QuestionList/QuestionListContainer";
 import ProfileContainer from "./Tabs/Profile/ProfileContainer";
 import {connect} from "react-redux";
+import TopUsers from "./Tabs/TopUsers/TopUsers";
 
 
 const TabNavigator = createBottomTabNavigator({
 
-        QuestionList: {
+        RecentQuestions: {
             screen: QuestionListContainer,
             navigationOptions: {
                 tabBarLabel: '',
@@ -30,7 +31,7 @@ const TabNavigator = createBottomTabNavigator({
         },
 
         TopUsers: {
-            screen: QuestionListContainer,
+            screen: TopUsers,
             navigationOptions: {
                 tabBarLabel: '',
                 tabBarIcon: ({tintColor}) => (

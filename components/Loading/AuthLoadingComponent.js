@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, View, ActivityIndicator, Modal, AsyncStorage, Alert} from 'react-native';
 import {setToken, setUserData} from "../../redux/app-redux";
 import {connect} from "react-redux";
+import LoadingComponent from "./LoadingComponent";
 
 
 const mapDispatchToProps = (dispatch) => {
@@ -19,23 +20,24 @@ class AuthLoadingComponent extends React.Component {
 
     render() {
         return (
-            <Expo.AppLoading/>
+            <LoadingComponent/>
         );
     }
 
     async checkForUser (){
+        // await AsyncStorage.clear()
         try {
             let userInfo = await AsyncStorage.getItem('USER');
             if (userInfo != null) {
+                //console.log(JSON.parse(userInfo));
                 this.props.setUserData(JSON.parse(userInfo));
                 this.props.navigation.navigate('AppStack');
             } else if(userInfo == null){
                 this.props.navigation.navigate('AuthStack');
             }
         } catch (e) {
-            console.log(e);
             Alert.alert(
-                'Error', e,
+                'Error', 'Something happened',
                 [
                     {text: 'Try again', style: 'cancel'},
                 ],

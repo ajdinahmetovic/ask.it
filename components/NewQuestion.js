@@ -16,7 +16,6 @@ const mapStateToProps = (state) => {
     };
 };
 
-
 const mapDispatchToProps = (dispatch) => {
     return {
         addQuestion: (question) => dispatch(addQuestion(question))
@@ -27,23 +26,17 @@ class NewQuestion extends React.Component {
 
     constructor(props){
         super(props);
-
         this.state = {
             questionTxt: '',
             isLoading: false,
 
         }
-
-
     }
 
     render() {
         return (
-
             <View style={styles.typeAnswerContainer}>
-
                 <LoadingModalComponent isLoading={this.state.isLoading}/>
-
                 <TextInput
                     onChangeText={(questionTxt) => this.setState({questionTxt})}
                     value={this.state.questionTxt}
@@ -55,9 +48,6 @@ class NewQuestion extends React.Component {
                     <MaterialCommunityIcons name='check' size={32} color='white'/>
                 </TouchableOpacity>
             </View>
-
-
-
         );
     }
 
@@ -65,15 +55,13 @@ class NewQuestion extends React.Component {
 
         this.setState({isLoading: true});
         const user = this.props.user;
-        // console.log('Token' + this.props.token);
-        // console.log(user);
         let questionObj = {
             userId: user._id,
             author: user.authData.username,
             question: this.state.questionTxt,
         };
 
-        let response = await fetch('http://192.168.0.108:3000/question',{
+        let response = await fetch('https://shielded-reef-97480.herokuapp.com/question',{
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' + this.props.token,
@@ -84,10 +72,9 @@ class NewQuestion extends React.Component {
         });
 
         let responseCode = response.status;
+        // console.log(response);
         response = await response.json();
-
-        console.log(response);
-        this.setState({isLoading: false});
+        this.setState({isLoading: false, questionTxt: ''});
         if(responseCode === 201) {
             this.props.addQuestion(response);
         } else {
@@ -107,9 +94,7 @@ class NewQuestion extends React.Component {
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewQuestion);
 
-
 const styles = StyleSheet.create({
-
 
     typeAnswerContainer:{
         width: width - 20,

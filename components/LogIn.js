@@ -7,8 +7,7 @@ import {
     TouchableOpacity,
     Alert,
     AsyncStorage,
-    Modal,
-    ActivityIndicator
+    ScrollView
 } from 'react-native';
 import LoadingComponent from "./Loading/LoadingComponent";
 import LoadingModalComponent from "./Loading/LoadingModalComponent";
@@ -28,7 +27,14 @@ const mapDispatchToProps = (dispatch) => {
 
 class LogIn extends React.Component {
     static navigationOptions = {
-        header: null
+       title: 'ASKIT',
+        headerStyle: {
+            backgroundColor: '#2B2B38',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontFamily: 'montserrat-bold'
+        },
     };
 
     constructor(props){
@@ -46,32 +52,33 @@ class LogIn extends React.Component {
 
                 <LoadingModalComponent isLoading={this.state.isLoading}/>
 
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        onChangeText={(username) => this.setState({username})}
-                        value={this.state.username}
-                        placeholder={"Username"}
-                        style={styles.inputText}/>
-                </View>
+                <ScrollView style={{marginTop: 30}}>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            onChangeText={(username) => this.setState({username})}
+                            value={this.state.username}
+                            placeholder={"Username"}
+                            style={styles.inputText}/>
+                    </View>
 
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        onChangeText={(password) => this.setState({password})}
-                        value={this.state.password}
-                        placeholder={"Password"}
-                        secureTextEntry={true}
-                        style={styles.inputText}/>
-                </View>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            onChangeText={(password) => this.setState({password})}
+                            value={this.state.password}
+                            placeholder={"Password"}
+                            secureTextEntry={true}
+                            style={styles.inputText}/>
+                    </View>
 
-                <TouchableOpacity onPress={() => this.login()} style={styles.loginButton}>
-                    <Text style={{color: 'white'}}>LOGIN</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.login()} style={styles.loginButton}>
+                        <Text style={{color: 'white', fontFamily: 'montserrat-semi-bold'}}>LOGIN</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp')} style={styles.register}>
-                    <Text style={{color: 'white'}}> Don't have account ? </Text>
-                    <Text style={{color: 'white'}}>Click here !</Text>
-                </TouchableOpacity>
-
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp')} style={styles.register}>
+                        <Text style={{color: 'white', fontFamily: 'montserrat'}}> Don't have account ? </Text>
+                        <Text style={{color: 'white', fontFamily: 'montserrat'}}>Click here !</Text>
+                    </TouchableOpacity>
+                </ScrollView>
             </View>
         );
     }
@@ -80,7 +87,7 @@ class LogIn extends React.Component {
 
     async login (){
         this.setState({isLoading: true});
-        let response = await fetch('http://192.168.0.108:3000/user/login', {
+        let response = await fetch('https://shielded-reef-97480.herokuapp.com/user/login', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -97,20 +104,25 @@ class LogIn extends React.Component {
         let responseCode = response.status;
         response = await response.json();
 
-        this.setState({isLoading: false});
         if(responseCode === 201){
             try {
-                //console.log(response.token);
-                this.props.setToken(response.token);
-                this.props.setUserData(response.user);
+                this.props.setUserData(response);
                 await AsyncStorage.setItem('USER', JSON.stringify(response));
             } catch (error) {
-                console.log(error)
+                Alert.alert(
+                    'Error',
+                    error,
+                    [
+                        {text: 'Try again', style: 'cancel'},
+                    ],
+                    { cancelable: true }
+                )
+
             }
 
+            this.setState({isLoading: false});
             this.props.navigation.navigate('AppStack')
         } else {
-            console.log(response);
             Alert.alert(
                 'Error',
                 response.message,
@@ -141,13 +153,15 @@ const styles = StyleSheet.create({
         height: 50,
         paddingHorizontal: 5,
         backgroundColor: '#E0358E',
-        borderRadius: 30,
+        borderRadius: 5,
         marginBottom: 20
     },
 
     inputText: {
         width: 250,
         height: 50,
+        color: 'white',
+        fontFamily: 'montserrat'
     },
 
     loginButton: {
@@ -157,7 +171,8 @@ const styles = StyleSheet.create({
         width: 250,
         height: 50,
         backgroundColor: '#714AE7',
-        borderRadius: 30,
+        borderRadius: 5,
+        fontFamily: 'montserrat-semi-bold',
         marginTop: 50
     },
 
